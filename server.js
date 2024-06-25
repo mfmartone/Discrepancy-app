@@ -40,8 +40,8 @@ app.get('/template', (req, res) => {
     });
 });
 
-// Start the server
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server avviato su http://localhost:${port}`);
+// Start the server on port 80
+const port = 80;
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server avviato su http://0.0.0.0:${port}`);
 });
