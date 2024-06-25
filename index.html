@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="title">Generatore di Rapporti di Discrepanze</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 data-translate="title">Generatore di Rapporti di Discrepanze</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="fileInput" class="file-label" data-translate="selectFile">
+                Seleziona il file Excel
+                <input id="fileInput" type="file" name="file" accept=".xlsx, .xls" required />
+            </label>
+            <div id="fileDetails" class="file-details">
+                <span id="fileName"></span>
+                <button id="removeFile" type="button" class="remove-file-button" data-translate="removeFile" style="display: none;">Rimuovi</button>
+            </div>
+            <button type="submit" class="upload-button" data-translate="uploadProcess" disabled>Carica e Processa</button>
+        </form>
+        <div class="button-group">
+            <button id="downloadTemplate" class="download-button" data-translate="downloadTemplate">Scarica il Template</button>
+        </div>
+        <div id="progressContainer" class="progress-container">
+            <div id="progressBar" class="progress-bar" data-translate="progressBar"></div>
+        </div>
+        <div id="result" data-translate="result"></div>
+    </div>
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

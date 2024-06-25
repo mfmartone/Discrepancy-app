@@ -1,0 +1,125 @@
+/* Stili base */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+.file-label {
+    display: inline-block;
+    background: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.file-label:hover {
+    background-color: #45a049;
+}
+
+#fileInput {
+    display: none;
+}
+
+.file-details {
+    margin: 10px 0;
+}
+
+#fileName {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.remove-file-button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.remove-file-button:hover {
+    background-color: #c0392b;
+}
+
+.upload-button {
+    background: #008CBA;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.upload-button:disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+}
+
+.upload-button:hover:enabled {
+    background-color: #007bb5;
+}
+
+.button-group {
+    margin-top: 20px;
+}
+
+.download-button {
+    background: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+    background-color: #e67e22;
+}
+
+/* Barra di progresso */
+.progress-container {
+    width: 100%;
+    background: #f4f4f9;
+    border-radius: 4px;
+    overflow: hidden;
+    display: none; /* Nascondi la barra finché non è necessaria */
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 20px;
+    width: 0%;
+    background: #4CAF50;
+    transition: width 0.4s ease;
+}
+
+#result {
+    margin-top: 20px;
+}
