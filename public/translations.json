@@ -1,0 +1,32 @@
+{
+    "en": {
+        "app_title": "Discrepancy Report Generator",
+        "select_file_label": "Select Excel File",
+        "remove_file_button": "Remove",
+        "upload_button": "Upload and Process",
+        "download_template_button": "Download Template",
+        "guide_heading": "Guide:",
+        "guide_step_1": "Download the Template:",
+        "guide_step_1_text": "Click the button below and use the provided Excel file. Ensure to populate the <em>Item Count</em> and <em>Inventory Manager</em> sheets.",
+        "guide_step_2": "Select the Excel file:",
+        "guide_step_2_text": "Use the button below to choose the Excel file you've prepared, ensuring it adheres to the template.",
+        "guide_step_3": "Start the Process:",
+        "guide_step_3_text": "Once the file is uploaded, click the button below to generate the Discrepancy Report.",
+        "loader_text": "Processing..."
+    },
+    "it": {
+        "app_title": "Generatore di Rapporti di Discrepanze",
+        "select_file_label": "Seleziona il file Excel",
+        "remove_file_button": "Rimuovi",
+        "upload_button": "Carica e Processa",
+        "download_template_button": "Scarica il Template",
+        "guide_heading": "Guida:",
+        "guide_step_1": "Scarica il Template:",
+        "guide_step_1_text": "Clicca sul pulsante qui sotto e utilizza il file Excel fornito. Assicurati di popolare i fogli <em>Item Count</em> e <em>Inventory Manager</em>.",
+        "guide_step_2": "Seleziona il file Excel:",
+        "guide_step_2_text": "Utilizza il pulsante qui sotto per scegliere il file Excel che hai preparato, assicurandoti che rispetti il template.",
+        "guide_step_3": "Avvia il Processo:",
+        "guide_step_3_text": "Una volta caricato il file, clicca sul pulsante sottostante per generare il Discrepancy Report.",
+        "loader_text": "Caricamento..."
+    }
+}
