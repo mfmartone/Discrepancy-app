@@ -1,23 +1,36 @@
 const XLSX = require('xlsx');
 const path = require('path');
 
+// Funzione per processare il file Excel
 function processExcelFile(inputFilePath, outputFilePath) {
-    // Leggere il file Excel principale (Item Count e Inventory Manager)
+    // Leggere il file Excel caricato
     const workbook = XLSX.readFile(inputFilePath);
 
-    // Ottenere il foglio "Item Count"
-    const wsItemCount = workbook.Sheets['Item Count'];
-    const itemCountData = XLSX.utils.sheet_to_json(wsItemCount, { header: 1, raw: false });
-
-    // Ottenere il foglio "Inventory Manager"
-    const wsInventoryManager = workbook.Sheets['Inventory Manager'];
-    const inventoryManagerData = XLSX.utils.sheet_to_json(wsInventoryManager, { header: 1, raw: false });
-
-    // Leggere il file "Item Master"
-    const itemMasterFilePath = path.join(__dirname, '/public/data/item master.xlsx');
-    const itemMasterWorkbook = XLSX.readFile(itemMasterFilePath);
-    const wsItemMaster = itemMasterWorkbook.Sheets[itemMasterWorkbook.SheetNames[0]]; // Assuming only one sheet
+    // Leggere il file Item Master (situato in /public/data/item master.xlsx)
+    const itemMasterPath = path.join(__dirname, 'public', 'data', 'item master.xlsx');
+    const itemMasterWorkbook = XLSX.readFile(itemMasterPath);
+    const wsItemMaster = itemMasterWorkbook.Sheets['Item Master'];
     const itemMasterData = XLSX.utils.sheet_to_json(wsItemMaster, { header: 1, raw: false });
+
+    // Creare una mappa per cercare rapidamente l'UPC nel foglio Item Master
+    const itemMasterMap = new Map();
+    for (let i = 1; i < itemMasterData.length; i++) {
+        const row = itemMasterData[i];
+        const upc = String(row[0]);
+        itemMasterMap.set(upc, {
+            SKU: row[1] || '',
+            Category: row[2] || '',
+            Subcategory: row[3] || ''
+        });
+    }
+
+    // Ottenere i fogli "Item Count" e "Inventory Manager"
+    const wsItemCount = workbook.Sheets['Item Count'];
+    const wsInventoryManager = workbook.Sheets['Inventory Manager'];
+
+    // Ottenere i dati dai fogli
+    const itemCountData = XLSX.utils.sheet_to_json(wsItemCount, { header: 1, raw: false });
+    const inventoryManagerData = XLSX.utils.sheet_to_json(wsInventoryManager, { header: 1, raw: false });
 
     // Creare il foglio "Discrepancy"
     let discrepancyData = [
@@ -37,49 +50,71 @@ function processExcelFile(inputFilePath, outputFilePath) {
         // Trovare la riga corrispondente nell'Inventory Manager
         const foundRow = findRowByUPC(inventoryManagerData, upc);
 
-        // Inizializzare le informazioni da Item Master
-        let sku = "";
-        let category = "";
-        let subcategory = "";
+        let inventoryManagerAvailability = 0;
+        let inventoryManagerConsigned = 0;
+        let sku = '';
+        let category = '';
+        let subcategory = '';
 
-        // Trovare la riga corrispondente nell'Item Master
-        const itemMasterRow = findRowByUPC(itemMasterData, upc);
-        if (itemMasterRow) {
-            sku = itemMasterRow[1]; // Indice di SKU nel foglio Item Master
-            category = itemMasterRow[2]; // Indice di Category nel foglio Item Master
-            subcategory = itemMasterRow[3]; // Indice di Subcategory nel foglio Item Master
+        if (foundRow) {
+            inventoryManagerAvailability = parseFloat(foundRow[1]) || 0;
+            inventoryManagerConsigned = parseFloat(foundRow[2]) || 0;
+        }
+
+        const differenceAvailability = inventoryManagerAvailability - itemCountAvailability;
+        const differenceConsigned = inventoryManagerConsigned - itemCountConsigned;
+
+        // Recuperare i dati dal Item Master se disponibili
+        if (itemMasterMap.has(upc)) {
+            const masterData = itemMasterMap.get(upc);
+            sku = masterData.SKU;
+            category = masterData.Category;
+            subcategory = masterData.Subcategory;
         }
 
         // Aggiungere i dati al foglio "Discrepancy"
-        if (foundRow) {
-            const inventoryManagerAvailability = parseFloat(foundRow[1]) || 0;
-            const inventoryManagerConsigned = parseFloat(foundRow[2]) || 0;
+        discrepancyData.push([
+            upc,
+            String(itemCountAvailability),
+            String(itemCountConsigned),
+            String(inventoryManagerAvailability),
+            String(inventoryManagerConsigned),
+            String(differenceAvailability),
+            String(differenceConsigned),
+            sku,
+            category,
+            subcategory
+        ]);
+    }
 
-            const differenceAvailability = inventoryManagerAvailability - itemCountAvailability;
-            const differenceConsigned = inventoryManagerConsigned - itemCountConsigned;
+    // Processare i dati "Inventory Manager" per trovare UPC non presenti in "Item Count"
+    for (let i = 1; i < inventoryManagerData.length; i++) {
+        const inventoryManagerRow = inventoryManagerData[i];
+        const upc = String(inventoryManagerRow[0]);
+        if (!findRowByUPC(itemCountData, upc)) {
+            const inventoryManagerAvailability = parseFloat(inventoryManagerRow[1]) || 0;
+            const inventoryManagerConsigned = parseFloat(inventoryManagerRow[2]) || 0;
+
+            let sku = '';
+            let category = '';
+            let subcategory = '';
+
+            // Recuperare i dati dal Item Master se disponibili
+            if (itemMasterMap.has(upc)) {
+                const masterData = itemMasterMap.get(upc);
+                sku = masterData.SKU;
+                category = masterData.Category;
+                subcategory = masterData.Subcategory;
+            }
 
             discrepancyData.push([
                 upc,
-                String(itemCountAvailability),
-                String(itemCountConsigned),
+                "0",
+                "0",
                 String(inventoryManagerAvailability),
                 String(inventoryManagerConsigned),
-                String(differenceAvailability),
-                String(differenceConsigned),
-                sku,
-                category,
-                subcategory
-            ]);
-        } else {
-            // Se non trova corrispondenza, riporta i valori dall'Item Count e 0 per Inventory Manager
-            discrepancyData.push([
-                upc,
-                String(itemCountAvailability),
-                String(itemCountConsigned),
-                "0",
-                "0",
-                String(0 - itemCountAvailability),
-                String(0 - itemCountConsigned),
+                String(inventoryManagerAvailability),
+                String(inventoryManagerConsigned),
                 sku,
                 category,
                 subcategory
@@ -89,11 +124,13 @@ function processExcelFile(inputFilePath, outputFilePath) {
 
     // Convertire i dati del "Discrepancy" in un foglio di lavoro
     const wsDiscrepancy = XLSX.utils.aoa_to_sheet(discrepancyData);
-    workbook.SheetNames = ['Discrepancy']; // Imposta solo il foglio "Discrepancy"
-    workbook.Sheets['Discrepancy'] = wsDiscrepancy;
+
+    // Aggiornare il workbook solo con il foglio "Discrepancy"
+    const newWorkbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(newWorkbook, wsDiscrepancy, 'Discrepancy');
 
     // Scrivere il file Excel aggiornato
-    XLSX.writeFile(workbook, outputFilePath);
+    XLSX.writeFile(newWorkbook, outputFilePath);
 
     console.log("Discrepancy report generated successfully.");
 }
