@@ -33,7 +33,8 @@ app.post('/upload', upload.single('file'), (req, res) => {
     }
 });
 
-// Avvio del server
-app.listen(3000, () => {
-    console.log('Server started on http://localhost:3000');
+// Avvio del server su porta 80
+const PORT = process.env.PORT || 80;  // Utilizza la porta 80 se disponibile, altrimenti la porta specificata nell'ambiente
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server started on http://0.0.0.0:${PORT}`);
 });
